@@ -1,0 +1,34 @@
+{
+    "mean_latency_ms": 62.03,
+    "total_communications": 600,
+    "failed_communications": 9,
+    "failure_rate_percent": 1.5,
+    "problematic_services": [
+        {
+            "service": "HTTP",
+            "port": 80,
+            "mean_latency_ms": 51.18,
+            "failed_count": 0,
+            "slow_count": 5
+        },
+        {
+            "service": "HTTPS",
+            "port": 443,
+            "mean_latency_ms": 54.25,
+            "failed_count": 0,
+            "slow_count": 7
+        },
+        {
+            "service": "DATABASE",
+            "port": 5432,
+            "mean_latency_ms": 95.68,
+            "failed_count": 9,
+            "slow_count": 0
+        }
+    ],
+    "alerts": [
+        "Alerte sur HTTP (port 80) : 0 échec(s), 5 communication(s) lente(s), latence moyenne 51.18 ms.",
+        "Alerte sur HTTPS (port 443) : 0 échec(s), 7 communication(s) lente(s), latence moyenne 54.25 ms.",
+        "Alerte sur DATABASE (port 5432) : 9 échec(s), 0 communication(s) lente(s), latence moyenne 95.68 ms."
+    ]
+}

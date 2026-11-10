@@ -1,0 +1,246 @@
+{
+    "errors": [
+        {
+            "timestamp": "2026-11-01 08:40:00",
+            "level": "ERROR",
+            "message": "Request timeout"
+        },
+        {
+            "timestamp": "2026-11-01 10:08:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 12:12:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 14:40:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-01 16:16:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 18:40:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-01 18:44:00",
+            "level": "ERROR",
+            "message": "Request timeout"
+        },
+        {
+            "timestamp": "2026-11-01 18:48:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 18:52:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-01 18:56:00",
+            "level": "ERROR",
+            "message": "Request timeout"
+        },
+        {
+            "timestamp": "2026-11-01 19:00:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 19:04:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-01 19:08:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 19:12:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-01 19:16:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-01 19:20:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 19:24:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 19:28:00",
+            "level": "ERROR",
+            "message": "Connection pool exhausted"
+        },
+        {
+            "timestamp": "2026-11-01 19:32:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-01 19:36:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-01 19:40:00",
+            "level": "ERROR",
+            "message": "Request timeout"
+        },
+        {
+            "timestamp": "2026-11-01 19:44:00",
+            "level": "ERROR",
+            "message": "Connection pool exhausted"
+        },
+        {
+            "timestamp": "2026-11-01 19:48:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-01 19:52:00",
+            "level": "ERROR",
+            "message": "Request timeout"
+        },
+        {
+            "timestamp": "2026-11-02 04:00:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-02 04:04:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-02 04:08:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-02 04:12:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-02 04:16:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-02 04:20:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-02 04:24:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-02 04:28:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-02 05:12:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-02 05:48:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-02 08:00:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-02 08:28:00",
+            "level": "ERROR",
+            "message": "HTTP 500 Internal Server Error"
+        },
+        {
+            "timestamp": "2026-11-02 09:48:00",
+            "level": "ERROR",
+            "message": "Invalid application configuration"
+        },
+        {
+            "timestamp": "2026-11-02 12:24:00",
+            "level": "ERROR",
+            "message": "Database connection failed"
+        },
+        {
+            "timestamp": "2026-11-02 15:52:00",
+            "level": "ERROR",
+            "message": "Request timeout"
+        },
+        {
+            "timestamp": "2026-11-02 17:16:00",
+            "level": "ERROR",
+            "message": "Connection pool exhausted"
+        }
+    ],
+    "warnings": [],
+    "recommendations": [
+        {
+            "error": "Request timeout",
+            "occurrences": 6,
+            "recommendation": "Contrôler la latence réseau et le temps de réponse des services appelés."
+        },
+        {
+            "error": "Database connection failed",
+            "occurrences": 13,
+            "recommendation": "Vérifier la base de données, le pool de connexions et les paramètres réseau."
+        },
+        {
+            "error": "Invalid application configuration",
+            "occurrences": 9,
+            "recommendation": "Vérifier les fichiers de configuration et les variables d'environnement."
+        },
+        {
+            "error": "HTTP 500 Internal Server Error",
+            "occurrences": 9,
+            "recommendation": "Consulter la trace de l'exception côté serveur et corriger l'erreur applicative."
+        },
+        {
+            "error": "Connection pool exhausted",
+            "occurrences": 3,
+            "recommendation": "Vérifier la base de données, le pool de connexions et les paramètres réseau."
+        }
+    ],
+    "recurring_errors": {
+        "Request timeout": 6,
+        "Database connection failed": 13,
+        "Invalid application configuration": 9,
+        "HTTP 500 Internal Server Error": 9,
+        "Connection pool exhausted": 3
+    },
+    "error_concentration_periods": {
+        "2026-11-01 18:00": 5,
+        "2026-11-01 19:00": 14,
+        "2026-11-02 04:00": 8,
+        "2026-11-02 05:00": 2,
+        "2026-11-02 08:00": 2
+    }
+}

@@ -1,0 +1,69 @@
+[
+    {
+        "type": "REPEATED_LOGIN_FAILURES_BY_IP",
+        "severity": "HIGH",
+        "source_ip": "10.0.0.40",
+        "failure_count": 5,
+        "concerned_users": {
+            "admin": 1,
+            "analyst": 2,
+            "app_user": 1,
+            "operator": 1
+        },
+        "message": "5 échecs d'authentification depuis 10.0.0.40.",
+        "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+    },
+    {
+        "type": "REPEATED_LOGIN_FAILURES_BY_IP",
+        "severity": "HIGH",
+        "source_ip": "192.168.1.51",
+        "failure_count": 5,
+        "concerned_users": {
+            "app_user": 2,
+            "operator": 2,
+            "support": 1
+        },
+        "message": "5 échecs d'authentification depuis 192.168.1.51.",
+        "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+    },
+    {
+        "type": "REPEATED_LOGIN_FAILURES_BY_IP",
+        "severity": "HIGH",
+        "source_ip": "203.0.113.77",
+        "failure_count": 13,
+        "concerned_users": {
+            "admin": 13
+        },
+        "message": "13 échecs d'authentification depuis 203.0.113.77.",
+        "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+    },
+    {
+        "type": "REPEATED_LOGIN_FAILURES_BY_USER",
+        "severity": "HIGH",
+        "username": "admin",
+        "failure_count": 14,
+        "message": "14 échecs d'authentification pour l'utilisateur admin.",
+        "recommendation": "Vérifier le compte, imposer un changement de mot de passe et rechercher une tentative de force brute."
+    },
+    {
+        "type": "REPEATED_LOGIN_FAILURES_BY_USER",
+        "severity": "HIGH",
+        "username": "analyst",
+        "failure_count": 5,
+        "message": "5 échecs d'authentification pour l'utilisateur analyst.",
+        "recommendation": "Vérifier le compte, imposer un changement de mot de passe et rechercher une tentative de force brute."
+    },
+    {
+        "type": "HIGH_SEVERITY_EVENTS",
+        "severity": "CRITICAL",
+        "event_count": 13,
+        "events_by_type": {
+            "LOGIN": 13
+        },
+        "source_ips": {
+            "203.0.113.77": 13
+        },
+        "message": "13 événement(s) de forte criticité détecté(s).",
+        "recommendation": "Examiner immédiatement les événements HIGH et CRITICAL et les corréler avec les comptes et adresses IP concernés."
+    }
+]

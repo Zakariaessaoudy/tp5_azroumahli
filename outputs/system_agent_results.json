@@ -1,0 +1,38 @@
+[
+    {
+        "type": "CPU_THRESHOLD_EXCEEDED",
+        "severity": "CRITICAL",
+        "hostname": "web-server-01",
+        "threshold_percent": 80.0,
+        "maximum_value_percent": 94.9,
+        "exceeded_measurement_count": 16,
+        "first_detection": "2026-11-02 05:40:00",
+        "last_detection": "2026-11-02 08:10:00",
+        "message": "Le seuil CPU est dépassé sur web-server-01.",
+        "recommendation": "Identifier les processus consommateurs et répartir la charge."
+    },
+    {
+        "type": "MEMORY_THRESHOLD_EXCEEDED",
+        "severity": "CRITICAL",
+        "hostname": "db-server-01",
+        "threshold_percent": 85.0,
+        "maximum_value_percent": 97.3,
+        "exceeded_measurement_count": 16,
+        "first_detection": "2026-11-02 22:20:00",
+        "last_detection": "2026-11-03 00:50:00",
+        "message": "Le seuil MEMORY est dépassé sur db-server-01.",
+        "recommendation": "Rechercher une fuite mémoire et libérer ou augmenter la mémoire disponible."
+    },
+    {
+        "type": "DISK_THRESHOLD_EXCEEDED",
+        "severity": "HIGH",
+        "hostname": "app-server-01",
+        "threshold_percent": 90.0,
+        "maximum_value_percent": 97.2,
+        "exceeded_measurement_count": 30,
+        "first_detection": "2026-11-03 15:00:00",
+        "last_detection": "2026-11-03 19:50:00",
+        "message": "Le seuil DISK est dépassé sur app-server-01.",
+        "recommendation": "Supprimer ou archiver les fichiers inutiles et augmenter l'espace disque si nécessaire."
+    }
+]
