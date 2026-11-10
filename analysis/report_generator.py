@@ -20,11 +20,6 @@ def generate_step1_report(results, output_path=None):
     system = results["system"]
     application = results["application"]
 
-    breach_lines = "\n".join(
-        f"- {item['timestamp']} — {item['hostname']}: {item['exceeded_thresholds']}"
-        for item in system["threshold_breaches"]
-    ) or "- Aucun dépassement observé."
-
     content = f"""# Rapport d'analyse AIOps — Étape 1
 
 Ce rapport couvre les six éléments de l'étape 1 : chargement et contrôle des données, analyses réseau, sécurité, système et application, puis synthèse des anomalies.
@@ -82,11 +77,6 @@ Une succession d'échecs peut correspondre à une attaque par force brute ou à 
 {_mapping_lines(system['mean_memory_by_server'], ' %')}
 
 - Serveur avec le pic disque le plus élevé : {system['highest_disk_server']} ({system['highest_disk_percent']:.2f} %)
-- Nombre de mesures dépassant au moins un seuil : {system['threshold_breach_count']}
-
-### Périodes de dépassement
-
-{breach_lines}
 
 ![Évolution de l'utilisation CPU par serveur](cpu_evolution.png)
 
