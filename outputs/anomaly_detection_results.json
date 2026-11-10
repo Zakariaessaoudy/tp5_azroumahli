@@ -1,0 +1,213 @@
+{
+    "model": "IsolationForest",
+    "parameters": {
+        "contamination": 0.05,
+        "random_state": 42
+    },
+    "features": [
+        "cpu_usage",
+        "memory_usage",
+        "disk_usage",
+        "process_count"
+    ],
+    "comparison_summary": {
+        "total_records": 1080,
+        "isolation_forest_anomalies_count": 54,
+        "deterministic_rules_anomalies_count": 62,
+        "detected_by_both": 51,
+        "detected_by_isolation_forest_only": 3,
+        "detected_by_deterministic_rules_only": 11,
+        "isolation_forest_anomalies_per_host": {
+            "app-server-01": 31,
+            "web-server-01": 17,
+            "db-server-01": 6
+        },
+        "deterministic_rules_per_host": {
+            "app-server-01": 30,
+            "web-server-01": 16,
+            "db-server-01": 16
+        }
+    },
+    "sample_detected_anomalies": [
+        {
+            "timestamp": "2026-11-01 09:30:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 42.0,
+            "memory_usage": 73.5,
+            "disk_usage": 58.7,
+            "process_count": 108,
+            "anomaly_score": -0.008250264671128105
+        },
+        {
+            "timestamp": "2026-11-01 10:30:00",
+            "hostname": "db-server-01",
+            "cpu_usage": 28.2,
+            "memory_usage": 41.7,
+            "disk_usage": 59.0,
+            "process_count": 123,
+            "anomaly_score": -0.0022419394463610853
+        },
+        {
+            "timestamp": "2026-11-02 05:40:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 88.5,
+            "memory_usage": 62.2,
+            "disk_usage": 66.3,
+            "process_count": 248,
+            "anomaly_score": -0.1155378734972261
+        },
+        {
+            "timestamp": "2026-11-02 05:50:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 87.0,
+            "memory_usage": 49.1,
+            "disk_usage": 65.0,
+            "process_count": 204,
+            "anomaly_score": -0.08534425928792111
+        },
+        {
+            "timestamp": "2026-11-02 06:00:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 91.6,
+            "memory_usage": 51.8,
+            "disk_usage": 64.3,
+            "process_count": 221,
+            "anomaly_score": -0.10707472148948893
+        },
+        {
+            "timestamp": "2026-11-02 06:10:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 90.4,
+            "memory_usage": 68.3,
+            "disk_usage": 67.1,
+            "process_count": 239,
+            "anomaly_score": -0.10490200298139385
+        },
+        {
+            "timestamp": "2026-11-02 06:20:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 85.3,
+            "memory_usage": 60.6,
+            "disk_usage": 68.9,
+            "process_count": 249,
+            "anomaly_score": -0.11438968170476127
+        },
+        {
+            "timestamp": "2026-11-02 06:30:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 91.4,
+            "memory_usage": 54.9,
+            "disk_usage": 63.2,
+            "process_count": 224,
+            "anomaly_score": -0.10006293472622785
+        },
+        {
+            "timestamp": "2026-11-02 06:40:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 92.4,
+            "memory_usage": 72.1,
+            "disk_usage": 66.2,
+            "process_count": 248,
+            "anomaly_score": -0.13101751907454195
+        },
+        {
+            "timestamp": "2026-11-02 06:50:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 89.9,
+            "memory_usage": 46.5,
+            "disk_usage": 63.9,
+            "process_count": 250,
+            "anomaly_score": -0.12272727842212905
+        },
+        {
+            "timestamp": "2026-11-02 07:00:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 82.4,
+            "memory_usage": 59.9,
+            "disk_usage": 65.2,
+            "process_count": 234,
+            "anomaly_score": -0.0827097416933561
+        },
+        {
+            "timestamp": "2026-11-02 07:10:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 94.9,
+            "memory_usage": 67.4,
+            "disk_usage": 63.8,
+            "process_count": 203,
+            "anomaly_score": -0.10952970939444062
+        },
+        {
+            "timestamp": "2026-11-02 07:20:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 89.8,
+            "memory_usage": 73.5,
+            "disk_usage": 64.8,
+            "process_count": 215,
+            "anomaly_score": -0.1082615813873552
+        },
+        {
+            "timestamp": "2026-11-02 07:30:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 93.2,
+            "memory_usage": 67.4,
+            "disk_usage": 64.8,
+            "process_count": 235,
+            "anomaly_score": -0.11790157313253213
+        },
+        {
+            "timestamp": "2026-11-02 07:40:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 93.7,
+            "memory_usage": 51.7,
+            "disk_usage": 63.1,
+            "process_count": 221,
+            "anomaly_score": -0.11207537418286107
+        },
+        {
+            "timestamp": "2026-11-02 07:50:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 89.6,
+            "memory_usage": 54.2,
+            "disk_usage": 69.5,
+            "process_count": 236,
+            "anomaly_score": -0.10882577226809154
+        },
+        {
+            "timestamp": "2026-11-02 08:00:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 90.7,
+            "memory_usage": 52.8,
+            "disk_usage": 64.9,
+            "process_count": 218,
+            "anomaly_score": -0.09257537616596767
+        },
+        {
+            "timestamp": "2026-11-02 08:10:00",
+            "hostname": "web-server-01",
+            "cpu_usage": 91.3,
+            "memory_usage": 65.9,
+            "disk_usage": 64.2,
+            "process_count": 255,
+            "anomaly_score": -0.13289269944862148
+        },
+        {
+            "timestamp": "2026-11-02 22:30:00",
+            "hostname": "db-server-01",
+            "cpu_usage": 28.2,
+            "memory_usage": 93.2,
+            "disk_usage": 68.2,
+            "process_count": 178,
+            "anomaly_score": -0.011673399637712967
+        },
+        {
+            "timestamp": "2026-11-02 23:10:00",
+            "hostname": "db-server-01",
+            "cpu_usage": 18.6,
+            "memory_usage": 90.3,
+            "disk_usage": 68.8,
+            "process_count": 116,
+            "anomaly_score": -0.07227374697250921
+        }
+    ]
+}
