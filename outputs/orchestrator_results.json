@@ -1,0 +1,706 @@
+{
+    "network": {
+        "mean_latency_ms": 62.03,
+        "total_communications": 600,
+        "failed_communications": 9,
+        "failure_rate_percent": 1.5,
+        "problematic_services": [
+            {
+                "service": "HTTP",
+                "port": 80,
+                "mean_latency_ms": 51.18,
+                "failed_count": 0,
+                "slow_count": 5
+            },
+            {
+                "service": "HTTPS",
+                "port": 443,
+                "mean_latency_ms": 54.25,
+                "failed_count": 0,
+                "slow_count": 7
+            },
+            {
+                "service": "DATABASE",
+                "port": 5432,
+                "mean_latency_ms": 95.68,
+                "failed_count": 9,
+                "slow_count": 0
+            }
+        ],
+        "alerts": [
+            "Alerte sur HTTP (port 80) : 0 échec(s), 5 communication(s) lente(s), latence moyenne 51.18 ms.",
+            "Alerte sur HTTPS (port 443) : 0 échec(s), 7 communication(s) lente(s), latence moyenne 54.25 ms.",
+            "Alerte sur DATABASE (port 5432) : 9 échec(s), 0 communication(s) lente(s), latence moyenne 95.68 ms."
+        ]
+    },
+    "security": [
+        {
+            "type": "REPEATED_LOGIN_FAILURES_BY_IP",
+            "severity": "HIGH",
+            "source_ip": "10.0.0.40",
+            "failure_count": 5,
+            "concerned_users": {
+                "admin": 1,
+                "analyst": 2,
+                "app_user": 1,
+                "operator": 1
+            },
+            "message": "5 échecs d'authentification depuis 10.0.0.40.",
+            "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+        },
+        {
+            "type": "REPEATED_LOGIN_FAILURES_BY_IP",
+            "severity": "HIGH",
+            "source_ip": "192.168.1.51",
+            "failure_count": 5,
+            "concerned_users": {
+                "app_user": 2,
+                "operator": 2,
+                "support": 1
+            },
+            "message": "5 échecs d'authentification depuis 192.168.1.51.",
+            "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+        },
+        {
+            "type": "REPEATED_LOGIN_FAILURES_BY_IP",
+            "severity": "HIGH",
+            "source_ip": "203.0.113.77",
+            "failure_count": 13,
+            "concerned_users": {
+                "admin": 13
+            },
+            "message": "13 échecs d'authentification depuis 203.0.113.77.",
+            "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+        },
+        {
+            "type": "REPEATED_LOGIN_FAILURES_BY_USER",
+            "severity": "HIGH",
+            "username": "admin",
+            "failure_count": 14,
+            "message": "14 échecs d'authentification pour l'utilisateur admin.",
+            "recommendation": "Vérifier le compte, imposer un changement de mot de passe et rechercher une tentative de force brute."
+        },
+        {
+            "type": "REPEATED_LOGIN_FAILURES_BY_USER",
+            "severity": "HIGH",
+            "username": "analyst",
+            "failure_count": 5,
+            "message": "5 échecs d'authentification pour l'utilisateur analyst.",
+            "recommendation": "Vérifier le compte, imposer un changement de mot de passe et rechercher une tentative de force brute."
+        },
+        {
+            "type": "HIGH_SEVERITY_EVENTS",
+            "severity": "CRITICAL",
+            "event_count": 13,
+            "events_by_type": {
+                "LOGIN": 13
+            },
+            "source_ips": {
+                "203.0.113.77": 13
+            },
+            "message": "13 événement(s) de forte criticité détecté(s).",
+            "recommendation": "Examiner immédiatement les événements HIGH et CRITICAL et les corréler avec les comptes et adresses IP concernés."
+        }
+    ],
+    "system": [
+        {
+            "type": "CPU_THRESHOLD_EXCEEDED",
+            "severity": "CRITICAL",
+            "hostname": "web-server-01",
+            "threshold_percent": 80.0,
+            "maximum_value_percent": 94.9,
+            "exceeded_measurement_count": 16,
+            "first_detection": "2026-11-02 05:40:00",
+            "last_detection": "2026-11-02 08:10:00",
+            "message": "Le seuil CPU est dépassé sur web-server-01.",
+            "recommendation": "Identifier les processus consommateurs et répartir la charge."
+        },
+        {
+            "type": "MEMORY_THRESHOLD_EXCEEDED",
+            "severity": "CRITICAL",
+            "hostname": "db-server-01",
+            "threshold_percent": 85.0,
+            "maximum_value_percent": 97.3,
+            "exceeded_measurement_count": 16,
+            "first_detection": "2026-11-02 22:20:00",
+            "last_detection": "2026-11-03 00:50:00",
+            "message": "Le seuil MEMORY est dépassé sur db-server-01.",
+            "recommendation": "Rechercher une fuite mémoire et libérer ou augmenter la mémoire disponible."
+        },
+        {
+            "type": "DISK_THRESHOLD_EXCEEDED",
+            "severity": "HIGH",
+            "hostname": "app-server-01",
+            "threshold_percent": 90.0,
+            "maximum_value_percent": 97.2,
+            "exceeded_measurement_count": 30,
+            "first_detection": "2026-11-03 15:00:00",
+            "last_detection": "2026-11-03 19:50:00",
+            "message": "Le seuil DISK est dépassé sur app-server-01.",
+            "recommendation": "Supprimer ou archiver les fichiers inutiles et augmenter l'espace disque si nécessaire."
+        }
+    ],
+    "application": {
+        "errors": [
+            {
+                "timestamp": "2026-11-01 08:40:00",
+                "level": "ERROR",
+                "message": "Request timeout"
+            },
+            {
+                "timestamp": "2026-11-01 10:08:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 12:12:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 14:40:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-01 16:16:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 18:40:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-01 18:44:00",
+                "level": "ERROR",
+                "message": "Request timeout"
+            },
+            {
+                "timestamp": "2026-11-01 18:48:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 18:52:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-01 18:56:00",
+                "level": "ERROR",
+                "message": "Request timeout"
+            },
+            {
+                "timestamp": "2026-11-01 19:00:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 19:04:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-01 19:08:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 19:12:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-01 19:16:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-01 19:20:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 19:24:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 19:28:00",
+                "level": "ERROR",
+                "message": "Connection pool exhausted"
+            },
+            {
+                "timestamp": "2026-11-01 19:32:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-01 19:36:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-01 19:40:00",
+                "level": "ERROR",
+                "message": "Request timeout"
+            },
+            {
+                "timestamp": "2026-11-01 19:44:00",
+                "level": "ERROR",
+                "message": "Connection pool exhausted"
+            },
+            {
+                "timestamp": "2026-11-01 19:48:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-01 19:52:00",
+                "level": "ERROR",
+                "message": "Request timeout"
+            },
+            {
+                "timestamp": "2026-11-02 04:00:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-02 04:04:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-02 04:08:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-02 04:12:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-02 04:16:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-02 04:20:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-02 04:24:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-02 04:28:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-02 05:12:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-02 05:48:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-02 08:00:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-02 08:28:00",
+                "level": "ERROR",
+                "message": "HTTP 500 Internal Server Error"
+            },
+            {
+                "timestamp": "2026-11-02 09:48:00",
+                "level": "ERROR",
+                "message": "Invalid application configuration"
+            },
+            {
+                "timestamp": "2026-11-02 12:24:00",
+                "level": "ERROR",
+                "message": "Database connection failed"
+            },
+            {
+                "timestamp": "2026-11-02 15:52:00",
+                "level": "ERROR",
+                "message": "Request timeout"
+            },
+            {
+                "timestamp": "2026-11-02 17:16:00",
+                "level": "ERROR",
+                "message": "Connection pool exhausted"
+            }
+        ],
+        "warnings": [],
+        "recommendations": [
+            {
+                "error": "Request timeout",
+                "occurrences": 6,
+                "recommendation": "Contrôler la latence réseau et le temps de réponse des services appelés."
+            },
+            {
+                "error": "Database connection failed",
+                "occurrences": 13,
+                "recommendation": "Vérifier la base de données, le pool de connexions et les paramètres réseau."
+            },
+            {
+                "error": "Invalid application configuration",
+                "occurrences": 9,
+                "recommendation": "Vérifier les fichiers de configuration et les variables d'environnement."
+            },
+            {
+                "error": "HTTP 500 Internal Server Error",
+                "occurrences": 9,
+                "recommendation": "Consulter la trace de l'exception côté serveur et corriger l'erreur applicative."
+            },
+            {
+                "error": "Connection pool exhausted",
+                "occurrences": 3,
+                "recommendation": "Vérifier la base de données, le pool de connexions et les paramètres réseau."
+            }
+        ],
+        "recurring_errors": {
+            "Request timeout": 6,
+            "Database connection failed": 13,
+            "Invalid application configuration": 9,
+            "HTTP 500 Internal Server Error": 9,
+            "Connection pool exhausted": 3
+        },
+        "error_concentration_periods": {
+            "2026-11-01 18:00": 5,
+            "2026-11-01 19:00": 14,
+            "2026-11-02 04:00": 8,
+            "2026-11-02 05:00": 2,
+            "2026-11-02 08:00": 2
+        }
+    },
+    "consolidated_alerts": [
+        {
+            "source": "Network Agent",
+            "severity": "HIGH",
+            "message": "Alerte sur HTTP (port 80) : 0 échec(s), 5 communication(s) lente(s), latence moyenne 51.18 ms."
+        },
+        {
+            "source": "Network Agent",
+            "severity": "HIGH",
+            "message": "Alerte sur HTTPS (port 443) : 0 échec(s), 7 communication(s) lente(s), latence moyenne 54.25 ms."
+        },
+        {
+            "source": "Network Agent",
+            "severity": "HIGH",
+            "message": "Alerte sur DATABASE (port 5432) : 9 échec(s), 0 communication(s) lente(s), latence moyenne 95.68 ms."
+        },
+        {
+            "source": "Security Agent",
+            "severity": "HIGH",
+            "message": "5 échecs d'authentification depuis 10.0.0.40.",
+            "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+        },
+        {
+            "source": "Security Agent",
+            "severity": "HIGH",
+            "message": "5 échecs d'authentification depuis 192.168.1.51.",
+            "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+        },
+        {
+            "source": "Security Agent",
+            "severity": "HIGH",
+            "message": "13 échecs d'authentification depuis 203.0.113.77.",
+            "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+        },
+        {
+            "source": "Security Agent",
+            "severity": "HIGH",
+            "message": "14 échecs d'authentification pour l'utilisateur admin.",
+            "recommendation": "Vérifier le compte, imposer un changement de mot de passe et rechercher une tentative de force brute."
+        },
+        {
+            "source": "Security Agent",
+            "severity": "HIGH",
+            "message": "5 échecs d'authentification pour l'utilisateur analyst.",
+            "recommendation": "Vérifier le compte, imposer un changement de mot de passe et rechercher une tentative de force brute."
+        },
+        {
+            "source": "Security Agent",
+            "severity": "CRITICAL",
+            "message": "13 événement(s) de forte criticité détecté(s).",
+            "recommendation": "Examiner immédiatement les événements HIGH et CRITICAL et les corréler avec les comptes et adresses IP concernés."
+        },
+        {
+            "source": "System Agent",
+            "severity": "CRITICAL",
+            "message": "Le seuil CPU est dépassé sur web-server-01.",
+            "recommendation": "Identifier les processus consommateurs et répartir la charge."
+        },
+        {
+            "source": "System Agent",
+            "severity": "CRITICAL",
+            "message": "Le seuil MEMORY est dépassé sur db-server-01.",
+            "recommendation": "Rechercher une fuite mémoire et libérer ou augmenter la mémoire disponible."
+        },
+        {
+            "source": "System Agent",
+            "severity": "HIGH",
+            "message": "Le seuil DISK est dépassé sur app-server-01.",
+            "recommendation": "Supprimer ou archiver les fichiers inutiles et augmenter l'espace disque si nécessaire."
+        },
+        {
+            "source": "Application Agent",
+            "severity": "HIGH",
+            "message": "5 type(s) d'erreurs applicatives récurrentes détecté(s).",
+            "details": {
+                "Request timeout": 6,
+                "Database connection failed": 13,
+                "Invalid application configuration": 9,
+                "HTTP 500 Internal Server Error": 9,
+                "Connection pool exhausted": 3
+            }
+        }
+    ],
+    "cross_incident_analysis": {
+        "correlated_incidents_count": 5,
+        "incidents": [
+            {
+                "incident_id": "INC-01-BRUTEFORCE-WEBSATURATION",
+                "title": "Attaque par force brute externe corrélée à une surcharge CPU/Processus sur web-server-01",
+                "time_window": "2026-11-02 05:00:00 à 2026-11-02 08:00:00",
+                "affected_components": {
+                    "servers": [
+                        "web-server-01"
+                    ],
+                    "ips": [
+                        "203.0.113.77 (IP externe suspecte)",
+                        "192.168.1.10 (web-server-01)"
+                    ],
+                    "services": [
+                        "HTTP (80)",
+                        "HTTPS (443)"
+                    ]
+                },
+                "observed_evidence": [
+                    "Agent Sécurité : 13 échecs consécutifs d'authentification (sévérité HIGH) depuis l'IP publique 203.0.113.77 entre 05:00 et 07:00 ciblant le compte admin.",
+                    "Agent Système : Débordement critique du CPU sur web-server-01 atteignant 94.9% (seuil 80%) et pic à 250 processus concurrents entre 05:40 et 08:00."
+                ],
+                "correlation_analysis": "Simultanéité temporelle exacte entre l'afflux de requêtes d'authentification malveillantes externes et la saturation des processus Apache/Nginx sur le serveur web.",
+                "explanatory_hypothesis": "Une attaque de type brute-force ou credential stuffing automatisée a généré un déni de service applicatif partiel par épuisement des workers/processus CPU sur le frontal web.",
+                "correlation_vs_causality": "Forte présomption de causalité : l'afflux massif de requêtes non autorisées provoque directement la création de processus et la consommation CPU. À valider formellement en croisant avec les logs d'accès HTTP détaillés.",
+                "severity": "CRITICAL"
+            },
+            {
+                "incident_id": "INC-02-NETWORK-LATENCY-APP-DEGRADATION",
+                "title": "Ralentissement réseau et cascade d'erreurs applicatives (timeouts et HTTP 500)",
+                "time_window": "2026-11-01 18:00:00 à 2026-11-01 20:00:00",
+                "affected_components": {
+                    "servers": [
+                        "app-server-01",
+                        "web-server-01"
+                    ],
+                    "services": [
+                        "HTTP (80)",
+                        "HTTPS (443)",
+                        "DATABASE (5432)"
+                    ]
+                },
+                "observed_evidence": [
+                    "Agent Réseau : 11 communications en statut SLOW avec une latence atteignant jusqu'à 362 ms (seuil à 150 ms) sur les flux web et base de données.",
+                    "Agent Applicatif : 19 erreurs concentrées sur cette période (HTTP 500 Internal Server Error, Request timeout, Database connection failed)."
+                ],
+                "correlation_analysis": "Les pics de latence réseau coïncident avec la montée des timeouts et des codes d'erreur 500 dans l'application.",
+                "explanatory_hypothesis": "Une congestion réseau ou une lenteur sur les échanges inter-services a provoqué des dépassements de timeout côté frontend/backend, entraînant des erreurs HTTP 500 pour les utilisateurs finaux.",
+                "correlation_vs_causality": "Corrélation observée évidente. Causalité probable : la latence entraîne les timeouts, mais une lenteur interne de l'application peut également allonger la durée de socket observée.",
+                "severity": "HIGH"
+            },
+            {
+                "incident_id": "INC-03-DB-FAILED-CONNECTIONS",
+                "title": "Coupure des communications PostgreSQL et erreurs applicatives 'Database connection failed'",
+                "time_window": "2026-11-02 11:30:00 à 2026-11-02 12:40:00",
+                "affected_components": {
+                    "servers": [
+                        "db-server-01 (192.168.1.20)",
+                        "app-server-01 (192.168.1.30)"
+                    ],
+                    "services": [
+                        "DATABASE (5432)"
+                    ]
+                },
+                "observed_evidence": [
+                    "Agent Réseau : 9 communications FAILED sur le port 5432 avec des latences extrêmes approchant 1018 ms.",
+                    "Agent Applicatif : Erreurs récurrentes 'Database connection failed' et 'Connection pool exhausted'."
+                ],
+                "correlation_analysis": "Concordance exacte entre les communications FAILED sur le port 5432 et l'impossibilité pour l'application d'établir une liaison SQL.",
+                "explanatory_hypothesis": "Indisponibilité temporaire du daemon PostgreSQL ou rupture du lien réseau/firewall entre app-server-01 et db-server-01 provoquant l'épuisement du pool de connexions.",
+                "correlation_vs_causality": "Causalité directe démontrée : l'incapacité de joindre le port 5432 engendre mécaniquement l'échec de connexion de l'application.",
+                "severity": "CRITICAL"
+            },
+            {
+                "incident_id": "INC-04-DB-MEMORY-SATURATION",
+                "title": "Saturation mémoire continue sur db-server-01",
+                "time_window": "2026-11-02 22:00:00 à 2026-11-03 01:00:00",
+                "affected_components": {
+                    "servers": [
+                        "db-server-01"
+                    ],
+                    "services": [
+                        "DATABASE"
+                    ]
+                },
+                "observed_evidence": [
+                    "Agent Système : Dépassement persistant du seuil de mémoire (seuil 85%), culminant à 97.3% sur 16 mesures consécutives."
+                ],
+                "correlation_analysis": "Augmentation continue de l'empreinte mémoire du serveur de base de données sans restitution.",
+                "explanatory_hypothesis": "Consommation excessive du cache PostgreSQL (shared_buffers) ou rétention anormale liée à des requêtes non libérées.",
+                "correlation_vs_causality": "Observation univariée confirmée par l'agent système avec risque imminent de déclenchement de l'OOM-Killer.",
+                "severity": "HIGH"
+            },
+            {
+                "incident_id": "INC-05-APP-DISK-CRITICAL",
+                "title": "Dépassement critique du seuil de stockage disque sur app-server-01",
+                "time_window": "2026-11-03 15:00:00 à 2026-11-03 19:50:00",
+                "affected_components": {
+                    "servers": [
+                        "app-server-01"
+                    ],
+                    "services": [
+                        "Application"
+                    ]
+                },
+                "observed_evidence": [
+                    "Agent Système : 30 mesures consécutives au-dessus du seuil de 90%, pic atteint à 97.2%."
+                ],
+                "correlation_analysis": "Saturation de la partition principale du serveur applicatif.",
+                "explanatory_hypothesis": "Accumulation de fichiers journaux volumineux non purgés ou montée d'artefacts temporaires.",
+                "correlation_vs_causality": "Observation directe de la métrique système, impact immédiat sur la capacité d'écriture de l'application.",
+                "severity": "CRITICAL"
+            }
+        ],
+        "correlation_methodology_note": "Distinction corrélation vs causalité : Une corrélation temporelle indique que deux événements se produisent simultanément (ex: attaque brute force externe et CPU élevé). La causalité n'est validée comme certaine que lorsqu'un lien déterministe est prouvé (ex: port 5432 fermé -> échec de connexion SQL)."
+    },
+    "global_status": {
+        "status": "CRITICAL",
+        "reason": "3 alerte(s) critique(s) active(s) nécessitant une intervention immédiate.",
+        "timestamp": "2026-11-13 19:37:34",
+        "total_alerts_count": 13,
+        "critical_alerts_count": 3,
+        "high_alerts_count": 10
+    },
+    "llm_interpretation": {
+        "status": "SUCCESS",
+        "model": "AIOps-LLM-Inference-Engine (Strict JSON Enforced)",
+        "situation_summary": "L'infrastructure DemoTech présente un état global dégradé avec plusieurs incidents critiques identifiés : 1) Une attaque par force brute depuis l'adresse IP 203.0.113.77 (13 échecs) corrélée à une surcharge CPU (94.9%) sur web-server-01. 2) 9 échecs de communication réseau sur le service de base de données (port 5432, latence max 62.03 ms moyenne) engendrant des erreurs applicatives répétées de connexion SQL. 3) Une saturation mémoire sur db-server-01 (97.3%) et un remplissage critique de l'espace disque sur app-server-01 (97.2%).",
+        "incident_classification": [
+            {
+                "incident_id": "INC-SEC-01",
+                "category": "Cybersécurité / Déni de service",
+                "severity": "CRITICAL",
+                "summary": "Tentative de force brute sur compte admin par 203.0.113.77 causant un pic CPU sur web-server-01."
+            },
+            {
+                "incident_id": "INC-NET-DB-02",
+                "category": "Réseau et Disponibilité Base de Données",
+                "severity": "CRITICAL",
+                "summary": "Rupture de communication sur le port 5432 (9 échecs) et épuisement du pool de connexions SQL."
+            },
+            {
+                "incident_id": "INC-SYS-DISK-03",
+                "category": "Capacité Système / Stockage",
+                "severity": "CRITICAL",
+                "summary": "app-server-01 dépasse le seuil critique de disque avec 97.2% d'occupation."
+            },
+            {
+                "incident_id": "INC-SYS-MEM-04",
+                "category": "Capacité Système / Mémoire",
+                "severity": "HIGH",
+                "summary": "db-server-01 dépasse le seuil de mémoire avec un pic à 97.3%."
+            },
+            {
+                "incident_id": "INC-PERF-NET-05",
+                "category": "Performance Applicative",
+                "severity": "MEDIUM",
+                "summary": "12 communications réseau lentes provoquant des erreurs 500 et timeouts applicatifs."
+            }
+        ],
+        "clear_explanation": "L'analyse multi-agents montre que les incidents ne sont pas isolés. Les tentatives de connexion illégitimes sur le port web ont mobilisé des ressources serveur importantes, tandis que des anomalies de routage ou de service sur le port 5432 ont bloqué l'accès aux données, déclenchant en chaîne des erreurs dans les journaux applicatifs. Parallèlement, deux serveurs souffrent d'une saturation de capacité (mémoire et disque) qui menace la continuité de service.",
+        "recommendations": [
+            {
+                "priority": "P1 - IMMÉDIAT",
+                "target": "Pare-feu / Passerelle Réseau",
+                "action": "Bloquer l'adresse IP externe suspecte 203.0.113.77 et activer un rate-limiting sur le endpoint de login."
+            },
+            {
+                "priority": "P1 - IMMÉDIAT",
+                "target": "db-server-01 & app-server-01",
+                "action": "Vérifier le statut du service PostgreSQL (port 5432), redémarrer le pool applicatif et purger les logs sur app-server-01 pour libérer le disque (actuellement à 97.2%)."
+            },
+            {
+                "priority": "P2 - COURT TERME",
+                "target": "db-server-01",
+                "action": "Investiguer la consommation mémoire (97.3%) de PostgreSQL et optimiser le dimensionnement des shared_buffers."
+            },
+            {
+                "priority": "P3 - MOYEN TERME",
+                "target": "Configuration applicative",
+                "action": "Revoir la gestion des timeouts et corriger les erreurs de configuration identifiées ('Invalid application configuration')."
+            }
+        ],
+        "human_verification_required": [
+            "Validation humaine impérative avant tout bannissement définitif d'IP au niveau pare-feu.",
+            "Validation préalable par l'équipe d'exploitation avant suppression de fichiers pour libérer le disque de app-server-01.",
+            "Revue manuelle des comptes utilisateurs ciblés (notamment le compte 'admin') pour s'assurer qu'aucun accès n'a été compromis.",
+            "Contrôle de la validité des modifications de fichiers de configuration applicatifs."
+        ]
+    },
+    "recommendations": [
+        {
+            "source": "Security Agent",
+            "recommendation": "Vérifier l'adresse IP et bloquer temporairement la source si l'activité est malveillante."
+        },
+        {
+            "source": "Security Agent",
+            "recommendation": "Vérifier le compte, imposer un changement de mot de passe et rechercher une tentative de force brute."
+        },
+        {
+            "source": "Security Agent",
+            "recommendation": "Examiner immédiatement les événements HIGH et CRITICAL et les corréler avec les comptes et adresses IP concernés."
+        },
+        {
+            "source": "System Agent",
+            "recommendation": "Identifier les processus consommateurs et répartir la charge."
+        },
+        {
+            "source": "System Agent",
+            "recommendation": "Rechercher une fuite mémoire et libérer ou augmenter la mémoire disponible."
+        },
+        {
+            "source": "System Agent",
+            "recommendation": "Supprimer ou archiver les fichiers inutiles et augmenter l'espace disque si nécessaire."
+        },
+        {
+            "source": "Application Agent",
+            "recommendation": "Request timeout: Contrôler la latence réseau et le temps de réponse des services appelés."
+        },
+        {
+            "source": "Application Agent",
+            "recommendation": "Database connection failed: Vérifier la base de données, le pool de connexions et les paramètres réseau."
+        },
+        {
+            "source": "Application Agent",
+            "recommendation": "Invalid application configuration: Vérifier les fichiers de configuration et les variables d'environnement."
+        },
+        {
+            "source": "Application Agent",
+            "recommendation": "HTTP 500 Internal Server Error: Consulter la trace de l'exception côté serveur et corriger l'erreur applicative."
+        }
+    ]
+}

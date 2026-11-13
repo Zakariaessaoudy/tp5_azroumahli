@@ -1,0 +1,26 @@
+{
+    "Nombre d'anomalies détectées": {
+        "valeur": 115,
+        "description": "Total des anomalies signalées sur l'ensemble des 4 sources de données"
+    },
+    "Nombre d'alertes générées": {
+        "valeur": 17,
+        "description": "Alertes qualifiées consolidées émises par les 4 agents spécialisés"
+    },
+    "Taux de détection (Recall système)": {
+        "valeur": "82.26 %",
+        "description": "Proportion des anomalies critiques connues identifiées (51/62)"
+    },
+    "Faux positifs": {
+        "valeur": 3,
+        "description": "Observations signalées anormales par le ML sans dépassement de seuil unitaire"
+    },
+    "Faux négatifs": {
+        "valeur": 11,
+        "description": "Anomalies franchissant légèrement un seuil mais non isolées par le modèle à 5%"
+    },
+    "Temps d'exécution total": {
+        "valeur": "303.65 ms",
+        "description": "Durée totale d'analyse (Chargement: 15.7ms, Orchestration: 18.4ms, ML: 269.5ms)"
+    }
+}

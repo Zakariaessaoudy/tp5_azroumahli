@@ -1,0 +1,169 @@
+================================================================================
+TP 5 : SUPERVISION, ADMINISTRATION ET CYBERSÉCURITÉ D'UNE INFRASTRUCTURE INFORMATIQUE
+À L'AIDE D'AGENTS IA
+RÉPONSES AUX QUESTIONS THÉORIQUES ET D'ANALYSE (ÉTAPES 3 ET 6)
+================================================================================
+
+
+################################################################################
+# ÉTAPE 3 : INTRODUCTION À LA DÉTECTION INTELLIGENTE DES ANOMALIES
+################################################################################
+
+--------------------------------------------------------------------------------
+Question 12 : Questions d'analyse sur Isolation Forest
+--------------------------------------------------------------------------------
+
+a) Quelle est la différence entre une détection par seuil et une détection basée sur Isolation Forest ?
+--------------------------------------------------------------------------------
+- Détection par seuil (règles déterministes) :
+  Elle analyse chaque métrique de manière univariée, isolée et statique (ex. CPU > 80% ou RAM > 85%).
+  Elle ne prend pas en compte les dépendances entre les variables et ne signale une anomalie
+  que lorsqu'une valeur frontière prédéfinie est franchie.
+- Détection par Isolation Forest (Machine Learning non supervisé) :
+  Elle analyse simultanément l'ensemble de l'espace des données (approche multivariée : CPU,
+  mémoire, disque et nombre de processus). L'algorithme isole les points rares et excentrés
+  au moyen d'arbres de partitionnement aléatoires. Il est capable d'identifier des comportements
+  anormaux subtils qui ne dépassent aucun seuil unitaire individuel (ex. un nombre de processus
+  anormalement élevé combiné à une charge mémoire inhabituelle pour ce serveur).
+
+
+b) Pourquoi faut-il choisir soigneusement le paramètre « contamination » ?
+--------------------------------------------------------------------------------
+- Le paramètre "contamination" représente la proportion a priori d'anomalies supposée présente
+  dans le jeu de données (dans le TP : 0.05, soit 5%).
+- S'il est surévalué : le modèle devient trop sensible et génère un nombre important de faux
+  positifs, classant des fluctuations de charge normales ou des pics d'activité légitimes
+  comme des anomalies.
+- S'il est sous-évalué : le modèle devient trop permissif et provoque des faux négatifs,
+  laissant passer des incidents réels ou des dégradations insidieuses sans déclencher d'alerte.
+
+
+c) Toutes les observations détectées comme anormales constituent-elles nécessairement des incidents ?
+--------------------------------------------------------------------------------
+- Non. Une observation "anormale" au sens de l'algorithme est uniquement une anomalie
+  statistique, c'est-à-dire un point de données inhabituel ou rare par rapport à la distribution
+  dominante (par exemple : une sauvegarde nocturne planifiée, un lot de traitement batch,
+  une mise à jour logicielle ou une rotation de fichiers journaux).
+- Elle ne constitue un "incident" que si elle provoque un préjudice opérationnel, une panne,
+  une indisponibilité de service, une violation de SLA ou un risque de cybersécurité.
+  C'est pourquoi l'analyse croisée et la corrélation multi-agents sont indispensables.
+
+
+d) Comment évaluer la qualité des résultats sans disposer d'une vérité terrain complète ?
+--------------------------------------------------------------------------------
+En l'absence de labels complets pré-établis, plusieurs méthodes complémentaires sont utilisées :
+1. Pseudo-vérité terrain (croisement de signaux) : Vérifier la cohérence des détections
+   avec d'autres sources factuelles (dépassements de seuils déterministes, journaux d'erreurs
+   applicatifs application_logs.txt, communications réseau en statut FAILED ou alertes de sécurité).
+2. Cohérence temporelle : Contrôler si les anomalies isolées se regroupent sur des fenêtres
+   temporelles logiques correspondant à des pannes ou attaques avérées.
+3. Analyse de sensibilité et stabilité : Faire varier le paramètre de contamination et tester
+   la reproductibilité des détections.
+4. Évaluation par des experts métier (SysAdmin / SRE) : Soumettre un échantillon représentatif
+   d'anomalies détectées à une revue humaine pour validation opérationnelle.
+
+
+--------------------------------------------------------------------------------
+Question 13 : Comparaison des approches
+--------------------------------------------------------------------------------
+
+1. Règles déterministes :
+   - Avantages : Comportement prévisible, 100% explicable, immédiat à exécuter, ne requiert
+     aucun apprentissage, indispensable pour garantir des règles de sécurité impératives.
+   - Limites : Approche rigide, aveugle aux interactions multivariées, incapable de détecter
+     l'inconnu, génère des tempêtes d'alertes en cas de dépassement prolongé.
+
+2. Isolation Forest (Machine Learning) :
+   - Avantages : Détection non supervisée sans étiquetage préalable, analyse multivariée
+     prenant en compte les corrélations entre métriques, détection de patterns inédits.
+   - Limites : Forte dépendance au réglage de la contamination, explicabilité plus faible
+     (effet boîte noire partielle), faux positifs sur des événements rares mais légitimes.
+
+3. Interprétation par un LLM :
+   - Avantages : Contextualisation en langage naturel clair, capacité de corréler des sources
+     hétérogènes (réseau, sécurité, système, logs applicatifs), formulation d'hypothèses
+     causales et de recommandations adaptées à l'opérateur.
+   - Limites : Coût et latence plus élevés, risque d'hallucinations si le prompt n'est pas
+     strictement borné, inadapté au calcul numérique pur en temps réel.
+
+
+
+################################################################################
+# ÉTAPE 6 : TESTS, VALIDATION ET ÉVALUATION
+################################################################################
+
+--------------------------------------------------------------------------------
+Question 21 : Sécurité et autonomie des agents
+--------------------------------------------------------------------------------
+
+a) Un agent doit-il pouvoir modifier directement la configuration d'un serveur ?
+--------------------------------------------------------------------------------
+NON, en aucun cas directement en production sans supervision ou validation stricte.
+Accorder une autonomie totale de modification expose l'infrastructure à des risques majeurs :
+- Déclenchement de pannes en cascade (effet domino) dues à une mauvaise interprétation des données.
+- Blocages intempestifs d'utilisateurs ou de services critiques (ex. règle de pare-feu trop large).
+- Risque d'hallucination ou de mauvaise commande si les actions reposent sur des modèles d'IA générative.
+- Non-conformité aux exigences de gouvernance IT, de sécurité (ITIL, ISO 27001) et d'auditabilité.
+
+
+b) Quelles actions peuvent être réalisées automatiquement ?
+--------------------------------------------------------------------------------
+Les actions réversibles, pré-approuvées, à faible impact et sans risque de perte de données :
+1. Collecte, analyse, corrélation et génération d'alertes en lecture seule (read-only).
+2. Envoi de notifications aux équipes d'astreinte (Slack, Teams, PagerDuty, Email).
+3. Actions curatives légères et locales :
+   - Purge de caches temporaires (/tmp) ou compression/rotation de fichiers journaux volumineux
+     en cas de saturation du disque.
+   - Quarantaine réseau temporaire (blocage d'IP externe avec durée d'expiration automatique
+     de 15 minutes) en cas d'attaque par force brute manifeste.
+   - Redémarrage automatique d'un processus ou conteneur défaillant (liveness probe).
+
+
+c) Quelles actions doivent nécessiter une validation humaine (« Human-in-the-Loop ») ?
+--------------------------------------------------------------------------------
+Toute action irréversible, structurelle ou à fort impact sur la continuité de service :
+1. Modification des fichiers de configuration maîtres des services (nginx.conf, postgresql.conf, sysctl).
+2. Suppression définitive de bases de données, partitions ou volumes de stockage.
+3. Bannissement permanent d'adresses IP ou révocation de comptes utilisateurs internes.
+4. Arrêt d'un serveur physique/virtuel ou basculement de production (failover de base de données).
+
+
+d) Comment éviter qu'un agent exécute une action non autorisée ?
+--------------------------------------------------------------------------------
+1. Principe du moindre privilège (Least Privilege / RBAC) : Assigner à l'agent un compte de service
+   doté de permissions minimales, strictement en lecture seule par défaut.
+2. Environnement cloisonné (Sandbox / Conteneurisation) : Isoler l'agent dans un conteneur
+   sans accès administrateur (non-root) et avec réseau restreint.
+3. Liste blanche (Whitelisting) : Interdire l'exécution de commandes système arbitraires
+   et limiter les actions à un catalogue fermé de scripts pré-validés avec vérification stricte
+   des arguments.
+4. Mécanisme de double validation (Approbation 4-yeux) : Requérir l'approbation explicite
+   d'un opérateur humain (via token ou confirmation dans l'interface de supervision) avant
+   d'exécuter toute action critique.
+
+
+e) Pourquoi est-il nécessaire de conserver un historique des décisions des agents ?
+--------------------------------------------------------------------------------
+1. Auditabilité et conformité réglementaire : Répondre aux standards de sécurité (ISO 27001, RGPD, SOC 2).
+2. Analyse post-mortem et Root Cause Analysis (RCA) : Retracer précisément l'arbre décisionnel
+   et les observations qui ont conduit l'agent à une alerte ou une recommandation donnée.
+3. Amélioration continue : Évaluer le taux de précision de l'agent au cours du temps,
+   mesurer les faux positifs/négatifs et affiner les invites (prompts) et seuils.
+4. Imputabilité légale et technique : Déterminer si un dysfonctionnement est imputable
+   à une anomalie logicielle de l'agent ou à une erreur d'un opérateur humain.
+
+
+f) Comment limiter les erreurs et les hallucinations d'un LLM ?
+--------------------------------------------------------------------------------
+1. RAG et ancrage strict (Grounding) : Fournir au modèle uniquement les métriques et résultats
+   structurés nécessaires, en lui interdisant expressément dans le prompt système d'inventer
+   des chiffres, événements ou seuils non fournis.
+2. Sorties structurées et typées (JSON Schema forcé / Pydantic) : Contraindre techniquement
+   le format de sortie du LLM afin d'éviter les digressions et valider syntaxiquement le résultat.
+3. Température basse (entre 0.0 et 0.2) : Réduire la créativité du modèle au profit de la
+   rigueur et de la reproductibilité des déductions techniques.
+4. Validation par des règles expertes déterministes (Self-Consistency / Critic Agent) :
+   Faire valider par un module Python déterministe ou un second agent que les affirmations
+   du LLM sont mathématiquement cohérentes avec les données sources.
+================================================================================
+
