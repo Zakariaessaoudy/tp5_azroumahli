@@ -25,12 +25,12 @@ Ce projet implémente une plateforme AIOps (*Artificial Intelligence for IT Oper
 4. **Étape 4 : Conception et orchestration du système multi-agents**
    - Orchestration centralisée coordonnant les agents spécialisés.
    - Analyse croisée multi-composants (rapprochement temporel, distinction corrélation vs causalité).
-   - Intégration d'un module d'interprétation LLM produisant un format JSON structuré et identifiant les actions soumises à validation humaine.
+   - Interface d'interprétation LLM produisant un JSON structuré et identifiant les actions soumises à validation humaine ; sans client LLM configuré, un résultat déterministe clairement signalé est utilisé.
 
 5. **Étape 5 : Développement d'une interface de supervision**
    - Dashboard interactif sous **Streamlit** présentant l'état global de l'infrastructure, les graphiques temporels (Plotly), les tableaux d'alertes et les recommandations IA.
 
-6. **Étape 6 : Tests, validation et évaluation** *(À venir)*
+6. **Étape 6 : Tests, validation et évaluation**
    - Tests unitaires automatisés avec `pytest` et métriques d'évaluation des performances du système.
 
 ---
@@ -73,12 +73,12 @@ Assurez-vous de disposer de Python 3.9+ et installez les dépendances du projet 
 pip install -r requirements.txt
 ```
 
-### 2. Exécution de l'orchestrateur multi-agents
+### 2. Exécution de la plateforme multi-agents
 
 Pour exécuter l'ensemble des agents et consolider les résultats :
 
 ```bash
-python orchestration/orchestrator.py
+python main.py
 ```
 
 ### 3. Lancement de l'interface de supervision (Dashboard Streamlit)

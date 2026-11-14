@@ -47,11 +47,11 @@ AIOps/
    - Isole les anomalies complexes multidimensionnelles même lorsqu'aucun seuil unitaire n'est individuellement franchi.
 
 ### C. Orchestration et Analyse Croisée d'Incidents
-- **Rapprochement temporel :** L'orchestrateur agrège les événements se produisant sur des fenêtres proches pour détecter les incidents systémiques (ex. l'attaque brute force provoquant la saturation CPU du serveur web).
-- **Distinction Corrélation vs Causalité :** Le système distingue une simple synchronie d'événements d'une causalité mécaniquement prouvée (ex. port base de données fermé qui engendre l'échec des requêtes SQL).
+- **Rapprochement temporel :** L'orchestrateur agrège les événements se produisant dans une même fenêtre horaire afin d'identifier des corrélations à investiguer.
+- **Distinction Corrélation vs Causalité :** Une synchronie est signalée comme une hypothèse. Les données disponibles ne suffisent pas à démontrer une causalité sans preuves complémentaires.
 
 ### D. Intégration Sécurisée d'un LLM
-- **Grounding strict (zéro hallucination) :** Le module LLM est alimenté exclusivement par les structures de données JSON produites par les agents. Il lui est interdit d'inventer des métriques ou événements non observés.
+- **Grounding strict :** L'interface LLM reçoit exclusivement les structures JSON produites par les agents et valide les clés obligatoires de sa réponse. Sans client LLM configuré, le système utilise un fallback déterministe explicitement étiqueté.
 - **Sortie JSON stricte et typée :** La réponse respecte un schéma rigoureux (`situation_summary`, `incident_classification`, `clear_explanation`, `recommendations`, `human_verification_required`).
 - **Human-in-the-Loop :** Les actions critiques (bannissement d'IP, suppression de fichiers, redémarrages de base) sont formellement isolées pour approbation humaine préalable.
 

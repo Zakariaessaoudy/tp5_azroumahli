@@ -1,12 +1,10 @@
-"""Point d'entrée de la plateforme AIOps — étape 1."""
+"""Point d'entrée principal de la plateforme AIOps multi-agents."""
 
-from analysis.data_analysis import run_step1
-from analysis.report_generator import generate_step1_report
+from orchestration.orchestrator import run_orchestration
 
 
 def main():
-    results = run_step1()
-    generate_step1_report(results)
+    return run_orchestration()
 
 
 if __name__ == "__main__":

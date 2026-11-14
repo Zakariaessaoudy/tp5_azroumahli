@@ -1,65 +1,57 @@
-# Rapport Global des Incidents et Recommandations AIOps
+# Rapport global des incidents et recommandations AIOps
 
-Ce rapport consolide les analyses multi-agents, les corrélations d'incidents et les recommandations opérationnelles de la plateforme **AIOps DemoTech**.
+Ce rapport synthétise uniquement les observations présentes dans les jeux de données DemoTech. Une proximité temporelle est considérée comme une corrélation possible et non comme une causalité démontrée.
 
----
+## 1. État global
 
-## 1. Synthèse de l'État Global de l'Infrastructure
+- **Statut :** `CRITICAL`
+- **Alertes consolidées :** 13
+- **Communications réseau :** 600
+- **Communications échouées :** 9, soit 1,5 %
+- **Communications lentes :** 12
+- **Erreurs applicatives :** 40
 
-- **Statut Global :** `CRITICAL`
-- **Nombre total d'alertes consolidées :** 17
-- **Nombre d'incidents majeurs corrélés :** 5
-- **Taux de détection global :** 82.26 % (sur les anomalies système connues)
+## 2. Observations principales
 
-L'infrastructure présente des dégradations critiques simultanées touchant la sécurité périmétrique, la liaison avec la base de données et la saturation de stockage.
+### Sécurité et charge CPU
 
----
+- L'adresse `203.0.113.77` produit 13 échecs d'authentification entre le 2 novembre 2026 à 05:00 et 06:24.
+- Le CPU de `web-server-01` dépasse le seuil de 80 % à partir de 05:40 et atteint 94,9 %.
+- Ces événements sont proches dans le temps. Une relation causale est possible, mais elle ne peut pas être démontrée sans les journaux HTTP, les traces des processus et les volumes de requêtes.
 
-## 2. Incidents Majeurs Détectés et Corrélations Croisées
+### Réseau et application
 
-### Incident 1 : Attaque par Force Brute Externe & Surcharge CPU (web-server-01)
-- **Composants :** `203.0.113.77` (IP externe attaquante) -> `web-server-01` (`192.168.1.10`, ports 80/443).
-- **Période :** 02/11/2026 de 05:00 à 08:00.
-- **Observations :**
-  - 13 échecs consécutifs d'authentification ciblant le compte `admin`.
-  - CPU de `web-server-01` saturé à **94.9%** (seuil 80%) avec **250 processus concurrents**.
-- **Hypothèse causale :** Une attaque brute-force par dictionnaire/credential stuffing a saturé les workers web Apache/Nginx.
+- 12 communications portent le statut `SLOW` entre le 1er novembre 2026 à 18:05 et 20:05.
+- La latence maximale observée dans la période 18:00–20:00 est de 362 ms, au-dessus du seuil de 150 ms.
+- 19 erreurs applicatives sont enregistrées pendant les heures 18:00 et 19:00.
+- Cette coïncidence justifie une investigation conjointe. Elle ne prouve pas si le réseau ralentit l'application ou si un traitement applicatif lent allonge les communications.
 
-### Incident 2 : Coupure de Liaison Base de Données (Port 5432)
-- **Composants :** `db-server-01` (`192.168.1.20`) <-> `app-server-01` (`192.168.1.30`).
-- **Période :** 02/11/2026 de 11:30 à 12:40.
-- **Observations :**
-  - 9 communications réseau en statut `FAILED` sur le port 5432 avec latences extrêmes (~1018 ms).
-  - Échecs applicatifs répétés : `Database connection failed` et `Connection pool exhausted`.
-- **Hypothèse causale :** Indisponibilité du service PostgreSQL ou incident de routage/firewall bloquant la connectivité inter-serveurs.
+### Communications avec la base de données
 
-### Incident 3 : Saturation Critique du Disque (app-server-01)
-- **Composants :** `app-server-01`.
-- **Période :** 03/11/2026 de 15:00 à 19:50.
-- **Observations :**
-  - Taux d'occupation disque atteignant **97.2%** (seuil 90%) sur 30 mesures consécutives.
-- **Hypothèse causale :** Remplissage de la partition par des logs non purgés ou des fichiers temporaires volumineux.
+- 9 communications `FAILED` apparaissent sur le port 5432 entre le 2 novembre 2026 à 11:30 et 12:40.
+- Leur latence maximale atteint 1 018,5 ms.
+- Une erreur `Database connection failed` apparaît à 12:24 pendant cette fenêtre.
+- Les données indiquent une corrélation cohérente avec un problème d'accès à la base, mais elles ne permettent pas d'identifier seules la cause exacte : service arrêté, saturation, pare-feu ou rupture réseau.
 
-### Incident 4 : Saturation Mémoire sur db-server-01
-- **Composants :** `db-server-01`.
-- **Période :** 02/11/2026 à 22:00 jusqu'au 03/11 à 01:00.
-- **Observations :** Pic de RAM à **97.3%** (seuil 85%).
-- **Hypothèse causale :** Fuite mémoire ou surconsommation du cache de base de données (shared_buffers).
+### Ressources système
 
-### Incident 5 : Ralentissement Réseau et Cascade d'Erreurs 500
-- **Composants :** Flux HTTP/HTTPS et PostgreSQL.
-- **Période :** 01/11/2026 de 18:00 à 20:00.
-- **Observations :** 12 communications réseau lentes (`SLOW`, latence > 360 ms) entraînant 19 erreurs `Request timeout` et `HTTP 500`.
+- `web-server-01` : CPU maximal de 94,9 %, seuil configuré à 80 %.
+- `db-server-01` : mémoire maximale de 97,3 %, seuil configuré à 85 %.
+- `app-server-01` : disque maximal de 97,2 %, seuil configuré à 90 %.
 
----
+## 3. Recommandations
 
-## 3. Plan de Recommandations Opérationnelles
+| Priorité | Cible | Recommandation | Validation |
+|---|---|---|---|
+| P1 | Sécurité | Examiner `203.0.113.77`, les comptes ciblés et les éventuels succès suivant les échecs. Appliquer un blocage temporaire uniquement après validation. | Humaine |
+| P1 | Base de données | Vérifier PostgreSQL, le port 5432, le pare-feu et les journaux de `db-server-01` pendant la fenêtre observée. | Humaine |
+| P1 | `app-server-01` | Identifier les fichiers responsables du remplissage du disque avant toute suppression ou rotation. | Humaine |
+| P2 | `db-server-01` | Examiner les processus et requêtes responsables de la consommation mémoire. | Humaine |
+| P2 | Réseau et application | Corréler les requêtes lentes avec les timeouts et erreurs HTTP 500 à l'aide d'identifiants de requête. | Humaine |
 
-| Priorité | Cible | Action Recommandée | Type de validation |
-| :--- | :--- | :--- | :--- |
-| **P1 - IMMÉDIAT** | Pare-feu / Sécurité | Bloquer l'IP externe `203.0.113.77` et activer un rate-limiting sur l'authentification. | Validation humaine requise |
-| **P1 - IMMÉDIAT** | app-server-01 | Purger les fichiers journaux et libérer l'espace disque (occupation critique à 97.2%). | Validation humaine requise |
-| **P1 - IMMÉDIAT** | db-server-01 | Vérifier l'état du daemon PostgreSQL (port 5432) et réinitialiser le pool de connexions. | Automatique / Opérateur |
-| **P2 - COURT TERME** | db-server-01 | Investiguer la consommation mémoire (97.3%) et optimiser les buffers PostgreSQL. | Analyse d'ingénierie |
-| **P3 - MOYEN TERME** | Application | Ajuster les seuils de timeout HTTP et corriger la configuration applicative erronée. | Équipe de développement |
+## 4. Limites
 
+- Les données sont synthétiques et ne constituent pas une vérité terrain complète.
+- Les corrélations horaires peuvent inclure des coïncidences.
+- Aucune action destructive, modification de configuration ou sanction de compte ne doit être exécutée automatiquement à partir de ce rapport.
+- L'interprétation déterministe est utilisée tant qu'aucun client LLM externe n'est configuré.

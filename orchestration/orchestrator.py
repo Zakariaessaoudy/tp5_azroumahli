@@ -71,101 +71,92 @@ def cross_incident_analysis(data: dict, agent_results: dict, config: dict) -> di
     - Identifie les corrélations multi-agents.
     - Génère une hypothèse explicative sans confondre corrélation et causalité.
     """
+    thresholds = config["thresholds"]
+    services = {int(s["port"]): s["name"] for s in config.get("services", [])}
+
+    network = data["network"].copy()
+    network["timestamp"] = pd.to_datetime(network["timestamp"])
+    network = network[
+        network["status"].isin(["FAILED", "SLOW"])
+        | (network["latency_ms"] > thresholds["latency_ms"])
+    ].copy()
+    network["period"] = network["timestamp"].dt.floor("h")
+
+    security = data["security"].copy()
+    security["timestamp"] = pd.to_datetime(security["timestamp"])
+    security = security[
+        ((security["event_type"] == "LOGIN") & (security["status"] == "FAILED"))
+        | security["severity"].isin(["HIGH", "CRITICAL"])
+    ].copy()
+    security["period"] = security["timestamp"].dt.floor("h")
+
+    system = data["system"].copy()
+    system["timestamp"] = pd.to_datetime(system["timestamp"])
+    system = system[
+        (system["cpu_usage"] > thresholds["cpu"])
+        | (system["memory_usage"] > thresholds["memory"])
+        | (system["disk_usage"] > thresholds["disk"])
+    ].copy()
+    system["period"] = system["timestamp"].dt.floor("h")
+
+    application_rows = []
+    for line in data["application"]:
+        parts = line.strip().split(" ", 3)
+        if len(parts) == 4 and parts[2] == "ERROR":
+            application_rows.append({
+                "timestamp": pd.to_datetime(f"{parts[0]} {parts[1]}"),
+                "message": parts[3],
+            })
+    application = pd.DataFrame(application_rows)
+    if not application.empty:
+        application["period"] = application["timestamp"].dt.floor("h")
+
+    periods = set(network["period"]) | set(security["period"]) | set(system["period"])
+    if not application.empty:
+        periods |= set(application["period"])
+
     correlated_incidents = []
+    for period in sorted(periods):
+        net = network[network["period"] == period]
+        sec = security[security["period"] == period]
+        sys_data = system[system["period"] == period]
+        app = application[application["period"] == period] if not application.empty else application
+        counts = {
+            "network": len(net), "security": len(sec),
+            "system": len(sys_data), "application": len(app),
+        }
+        active_sources = [name for name, count in counts.items() if count > 0]
+        if len(active_sources) < 2:
+            continue
 
-    # Incident 1 : Attaque par force brute externe et surcharge CPU/Processus sur web-server-01
-    correlated_incidents.append({
-        "incident_id": "INC-01-BRUTEFORCE-WEBSATURATION",
-        "title": "Attaque par force brute externe corrélée à une surcharge CPU/Processus sur web-server-01",
-        "time_window": "2026-11-02 05:00:00 à 2026-11-02 08:00:00",
-        "affected_components": {
-            "servers": ["web-server-01"],
-            "ips": ["203.0.113.77 (IP externe suspecte)", "192.168.1.10 (web-server-01)"],
-            "services": ["HTTP (80)", "HTTPS (443)"],
-        },
-        "observed_evidence": [
-            "Agent Sécurité : 13 échecs consécutifs d'authentification (sévérité HIGH) depuis l'IP publique 203.0.113.77 entre 05:00 et 07:00 ciblant le compte admin.",
-            "Agent Système : Débordement critique du CPU sur web-server-01 atteignant 94.9% (seuil 80%) et pic à 250 processus concurrents entre 05:40 et 08:00.",
-        ],
-        "correlation_analysis": "Simultanéité temporelle exacte entre l'afflux de requêtes d'authentification malveillantes externes et la saturation des processus Apache/Nginx sur le serveur web.",
-        "explanatory_hypothesis": "Une attaque de type brute-force ou credential stuffing automatisée a généré un déni de service applicatif partiel par épuisement des workers/processus CPU sur le frontal web.",
-        "correlation_vs_causality": "Forte présomption de causalité : l'afflux massif de requêtes non autorisées provoque directement la création de processus et la consommation CPU. À valider formellement en croisant avec les logs d'accès HTTP détaillés.",
-        "severity": "CRITICAL",
-    })
+        ports = sorted(int(port) for port in net["port"].unique())
+        evidence = []
+        if len(net):
+            evidence.append(f"Réseau : {len(net)} anomalie(s), latence maximale {net['latency_ms'].max():.1f} ms.")
+        if len(sec):
+            evidence.append(f"Sécurité : {len(sec)} événement(s) suspect(s), IP {sorted(sec['source_ip'].unique().tolist())}.")
+        if len(sys_data):
+            evidence.append(f"Système : {len(sys_data)} dépassement(s) sur {sorted(sys_data['hostname'].unique().tolist())}.")
+        if len(app):
+            evidence.append(f"Application : {len(app)} erreur(s), messages {sorted(app['message'].unique().tolist())}.")
 
-    # Incident 2 : Dégradation de latence réseau et avalanche d'erreurs applicatives (18h-20h le 01/11)
-    correlated_incidents.append({
-        "incident_id": "INC-02-NETWORK-LATENCY-APP-DEGRADATION",
-        "title": "Ralentissement réseau et cascade d'erreurs applicatives (timeouts et HTTP 500)",
-        "time_window": "2026-11-01 18:00:00 à 2026-11-01 20:00:00",
-        "affected_components": {
-            "servers": ["app-server-01", "web-server-01"],
-            "services": ["HTTP (80)", "HTTPS (443)", "DATABASE (5432)"],
-        },
-        "observed_evidence": [
-            "Agent Réseau : 11 communications en statut SLOW avec une latence atteignant jusqu'à 362 ms (seuil à 150 ms) sur les flux web et base de données.",
-            "Agent Applicatif : 19 erreurs concentrées sur cette période (HTTP 500 Internal Server Error, Request timeout, Database connection failed).",
-        ],
-        "correlation_analysis": "Les pics de latence réseau coïncident avec la montée des timeouts et des codes d'erreur 500 dans l'application.",
-        "explanatory_hypothesis": "Une congestion réseau ou une lenteur sur les échanges inter-services a provoqué des dépassements de timeout côté frontend/backend, entraînant des erreurs HTTP 500 pour les utilisateurs finaux.",
-        "correlation_vs_causality": "Corrélation observée évidente. Causalité probable : la latence entraîne les timeouts, mais une lenteur interne de l'application peut également allonger la durée de socket observée.",
-        "severity": "HIGH",
-    })
-
-    # Incident 3 : Échecs critiques de connexion base de données (Port 5432)
-    correlated_incidents.append({
-        "incident_id": "INC-03-DB-FAILED-CONNECTIONS",
-        "title": "Coupure des communications PostgreSQL et erreurs applicatives 'Database connection failed'",
-        "time_window": "2026-11-02 11:30:00 à 2026-11-02 12:40:00",
-        "affected_components": {
-            "servers": ["db-server-01 (192.168.1.20)", "app-server-01 (192.168.1.30)"],
-            "services": ["DATABASE (5432)"],
-        },
-        "observed_evidence": [
-            "Agent Réseau : 9 communications FAILED sur le port 5432 avec des latences extrêmes approchant 1018 ms.",
-            "Agent Applicatif : Erreurs récurrentes 'Database connection failed' et 'Connection pool exhausted'.",
-        ],
-        "correlation_analysis": "Concordance exacte entre les communications FAILED sur le port 5432 et l'impossibilité pour l'application d'établir une liaison SQL.",
-        "explanatory_hypothesis": "Indisponibilité temporaire du daemon PostgreSQL ou rupture du lien réseau/firewall entre app-server-01 et db-server-01 provoquant l'épuisement du pool de connexions.",
-        "correlation_vs_causality": "Causalité directe démontrée : l'incapacité de joindre le port 5432 engendre mécaniquement l'échec de connexion de l'application.",
-        "severity": "CRITICAL",
-    })
-
-    # Incident 4 : Fuite mémoire / saturation RAM sur db-server-01
-    correlated_incidents.append({
-        "incident_id": "INC-04-DB-MEMORY-SATURATION",
-        "title": "Saturation mémoire continue sur db-server-01",
-        "time_window": "2026-11-02 22:00:00 à 2026-11-03 01:00:00",
-        "affected_components": {
-            "servers": ["db-server-01"],
-            "services": ["DATABASE"],
-        },
-        "observed_evidence": [
-            "Agent Système : Dépassement persistant du seuil de mémoire (seuil 85%), culminant à 97.3% sur 16 mesures consécutives.",
-        ],
-        "correlation_analysis": "Augmentation continue de l'empreinte mémoire du serveur de base de données sans restitution.",
-        "explanatory_hypothesis": "Consommation excessive du cache PostgreSQL (shared_buffers) ou rétention anormale liée à des requêtes non libérées.",
-        "correlation_vs_causality": "Observation univariée confirmée par l'agent système avec risque imminent de déclenchement de l'OOM-Killer.",
-        "severity": "HIGH",
-    })
-
-    # Incident 5 : Remplissage critique du disque sur app-server-01
-    correlated_incidents.append({
-        "incident_id": "INC-05-APP-DISK-CRITICAL",
-        "title": "Dépassement critique du seuil de stockage disque sur app-server-01",
-        "time_window": "2026-11-03 15:00:00 à 2026-11-03 19:50:00",
-        "affected_components": {
-            "servers": ["app-server-01"],
-            "services": ["Application"],
-        },
-        "observed_evidence": [
-            "Agent Système : 30 mesures consécutives au-dessus du seuil de 90%, pic atteint à 97.2%.",
-        ],
-        "correlation_analysis": "Saturation de la partition principale du serveur applicatif.",
-        "explanatory_hypothesis": "Accumulation de fichiers journaux volumineux non purgés ou montée d'artefacts temporaires.",
-        "correlation_vs_causality": "Observation directe de la métrique système, impact immédiat sur la capacité d'écriture de l'application.",
-        "severity": "CRITICAL",
-    })
+        severity = "CRITICAL" if ((net["status"] == "FAILED").any() or (sec["severity"] == "CRITICAL").any()) else "HIGH"
+        incident_number = len(correlated_incidents) + 1
+        correlated_incidents.append({
+            "incident_id": f"INC-{incident_number:02d}",
+            "title": f"Anomalies corrélées : {', '.join(active_sources)}",
+            "time_window": f"{period} à {period + pd.Timedelta(hours=1)}",
+            "affected_components": {
+                "servers": sorted(sys_data["hostname"].unique().tolist()),
+                "ips": sorted(sec["source_ip"].unique().tolist()),
+                "services": [f"{services.get(port, 'UNKNOWN')} ({port})" for port in ports],
+            },
+            "observed_evidence": evidence,
+            "correlation_analysis": "Plusieurs catégories d'anomalies apparaissent dans la même fenêtre horaire.",
+            "explanatory_hypothesis": "Une cause commune est possible, mais les données disponibles ne suffisent pas à l'établir.",
+            "correlation_vs_causality": "Corrélation temporelle observée uniquement ; causalité non démontrée et à vérifier humainement.",
+            "severity": severity,
+        })
 
     return {
         "correlated_incidents_count": len(correlated_incidents),
@@ -179,7 +170,7 @@ def cross_incident_analysis(data: dict, agent_results: dict, config: dict) -> di
     }
 
 
-def llm_interpretation_module(structured_results: dict, config: dict) -> dict:
+def llm_interpretation_module(structured_results: dict, config: dict, llm_function=None) -> dict:
     """Question 17 : Module d'intégration d'un LLM pour interpréter les résultats.
 
     Le LLM reçoit EXCLUSIVEMENT les résultats structurés des agents et produit :
@@ -190,129 +181,64 @@ def llm_interpretation_module(structured_results: dict, config: dict) -> dict:
     - Les éléments nécessitant une vérification humaine.
     Règle absolue : n'invente aucune métrique ni aucun événement.
     """
-    # Construction du prompt standardisé pour l'API LLM
-    llm_prompt = f"""
-Tu es un expert AIOps et Incident Commander. Analyse les résultats structurés suivants issus de 4 agents de supervision :
-Réseau : {json.dumps(structured_results.get("network", {}), ensure_ascii=False)}
-Sécurité : {json.dumps(structured_results.get("security", {}), ensure_ascii=False)}
-Système : {json.dumps(structured_results.get("system", {}), ensure_ascii=False)}
-Applicatif : {json.dumps(structured_results.get("application", {}), ensure_ascii=False)}
-Corrélations : {json.dumps(structured_results.get("cross_analysis", {}), ensure_ascii=False)}
+    if llm_function is not None:
+        llm_input = {
+            "network": structured_results["network"],
+            "security": structured_results["security"],
+            "system": structured_results["system"],
+            "application": structured_results["application"],
+            "cross_incident_analysis": structured_results["cross_incident_analysis"],
+        }
+        llm_output = llm_function(llm_input)
+        required_keys = {
+            "situation_summary", "incident_classification", "clear_explanation",
+            "recommendations", "human_verification_required",
+        }
+        if not isinstance(llm_output, dict) or not required_keys.issubset(llm_output):
+            raise ValueError("La réponse du LLM ne respecte pas le format JSON demandé.")
+        return {"status": "SUCCESS", "model": "LLM externe", **llm_output}
 
-Règles impératives :
-1. Ne pas inventer de métriques, chiffres ou événements inexistants dans les données transmises.
-2. Respecter strictement la structure JSON demandée :
-{{
-    "situation_summary": "...",
-    "incident_classification": [
-        {{"incident_id": "...", "category": "...", "severity": "...", "summary": "..."}}
-    ],
-    "clear_explanation": "...",
-    "recommendations": [
-        {{"priority": "...", "target": "...", "action": "..."}}
-    ],
-    "human_verification_required": ["..."]
-}}
-"""
+    incidents = structured_results["cross_incident_analysis"]["incidents"]
+    alerts = structured_results["consolidated_alerts"]
+    classifications = [
+        {
+            "incident_id": incident["incident_id"],
+            "category": "Corrélation multi-agents",
+            "severity": incident["severity"],
+            "summary": incident["title"],
+        }
+        for incident in incidents
+    ]
 
-    # Vérification si une clé d'API LLM externe est configurée dans l'environnement
-    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY")
-    llm_response = None
+    recommendations = []
+    for alert in alerts:
+        recommendation = alert.get("recommendation")
+        if recommendation and recommendation not in [item["action"] for item in recommendations]:
+            recommendations.append({
+                "priority": "P1" if alert.get("severity") == "CRITICAL" else "P2",
+                "target": alert.get("source", "Infrastructure"),
+                "action": recommendation,
+            })
 
-    if api_key:
-        try:
-            # Si une clé est disponible, on peut tenter l'appel réel
-            # Exemple avec google-genai / gemini si disponible
-            pass
-        except Exception:
-            llm_response = None
-
-    # Moteur d'interprétation LLM déterministe / conforme au schéma JSON strict demandé
-    # basé à 100% sur les observations réelles des agents sans aucune hallucination
-    net_summary = structured_results["network"]
-    sec_summary = structured_results["security"]
-    sys_summary = structured_results["system"]
-    app_summary = structured_results["application"]
-
-    llm_structured_output = {
-        "status": "SUCCESS",
-        "model": "AIOps-LLM-Inference-Engine (Strict JSON Enforced)",
+    return {
+        "status": "DETERMINISTIC_FALLBACK",
+        "model": "Aucun LLM externe configuré",
         "situation_summary": (
-            f"L'infrastructure DemoTech présente un état global dégradé avec plusieurs incidents critiques identifiés : "
-            f"1) Une attaque par force brute depuis l'adresse IP 203.0.113.77 (13 échecs) corrélée à une surcharge CPU (94.9%) sur web-server-01. "
-            f"2) 9 échecs de communication réseau sur le service de base de données (port 5432, latence max {net_summary.get('mean_latency_ms', 62)} ms moyenne) "
-            f"engendrant des erreurs applicatives répétées de connexion SQL. "
-            f"3) Une saturation mémoire sur db-server-01 (97.3%) et un remplissage critique de l'espace disque sur app-server-01 (97.2%)."
+            f"{len(alerts)} alerte(s) consolidée(s) et {len(incidents)} corrélation(s) "
+            "temporelle(s) ont été calculées à partir des résultats structurés."
         ),
-        "incident_classification": [
-            {
-                "incident_id": "INC-SEC-01",
-                "category": "Cybersécurité / Déni de service",
-                "severity": "CRITICAL",
-                "summary": "Tentative de force brute sur compte admin par 203.0.113.77 causant un pic CPU sur web-server-01.",
-            },
-            {
-                "incident_id": "INC-NET-DB-02",
-                "category": "Réseau et Disponibilité Base de Données",
-                "severity": "CRITICAL",
-                "summary": "Rupture de communication sur le port 5432 (9 échecs) et épuisement du pool de connexions SQL.",
-            },
-            {
-                "incident_id": "INC-SYS-DISK-03",
-                "category": "Capacité Système / Stockage",
-                "severity": "CRITICAL",
-                "summary": "app-server-01 dépasse le seuil critique de disque avec 97.2% d'occupation.",
-            },
-            {
-                "incident_id": "INC-SYS-MEM-04",
-                "category": "Capacité Système / Mémoire",
-                "severity": "HIGH",
-                "summary": "db-server-01 dépasse le seuil de mémoire avec un pic à 97.3%.",
-            },
-            {
-                "incident_id": "INC-PERF-NET-05",
-                "category": "Performance Applicative",
-                "severity": "MEDIUM",
-                "summary": "12 communications réseau lentes provoquant des erreurs 500 et timeouts applicatifs.",
-            },
-        ],
+        "incident_classification": classifications,
         "clear_explanation": (
-            "L'analyse multi-agents montre que les incidents ne sont pas isolés. Les tentatives de connexion illégitimes "
-            "sur le port web ont mobilisé des ressources serveur importantes, tandis que des anomalies de routage ou de service "
-            "sur le port 5432 ont bloqué l'accès aux données, déclenchant en chaîne des erreurs dans les journaux applicatifs. "
-            "Parallèlement, deux serveurs souffrent d'une saturation de capacité (mémoire et disque) qui menace la continuité de service."
+            "Les rapprochements reposent uniquement sur la présence d'anomalies dans une même fenêtre horaire. "
+            "Ils ne prouvent pas une relation de causalité."
         ),
-        "recommendations": [
-            {
-                "priority": "P1 - IMMÉDIAT",
-                "target": "Pare-feu / Passerelle Réseau",
-                "action": "Bloquer l'adresse IP externe suspecte 203.0.113.77 et activer un rate-limiting sur le endpoint de login.",
-            },
-            {
-                "priority": "P1 - IMMÉDIAT",
-                "target": "db-server-01 & app-server-01",
-                "action": "Vérifier le statut du service PostgreSQL (port 5432), redémarrer le pool applicatif et purger les logs sur app-server-01 pour libérer le disque (actuellement à 97.2%).",
-            },
-            {
-                "priority": "P2 - COURT TERME",
-                "target": "db-server-01",
-                "action": "Investiguer la consommation mémoire (97.3%) de PostgreSQL et optimiser le dimensionnement des shared_buffers.",
-            },
-            {
-                "priority": "P3 - MOYEN TERME",
-                "target": "Configuration applicative",
-                "action": "Revoir la gestion des timeouts et corriger les erreurs de configuration identifiées ('Invalid application configuration').",
-            },
-        ],
+        "recommendations": recommendations,
         "human_verification_required": [
-            "Validation humaine impérative avant tout bannissement définitif d'IP au niveau pare-feu.",
-            "Validation préalable par l'équipe d'exploitation avant suppression de fichiers pour libérer le disque de app-server-01.",
-            "Revue manuelle des comptes utilisateurs ciblés (notamment le compte 'admin') pour s'assurer qu'aucun accès n'a été compromis.",
-            "Contrôle de la validité des modifications de fichiers de configuration applicatifs.",
+            "Confirmer chaque alerte dans les journaux sources.",
+            "Vérifier les corrélations avant de conclure à une causalité.",
+            "Valider toute action de blocage, suppression, redémarrage ou modification de configuration.",
         ],
     }
-
-    return llm_structured_output
 
 
 def infrastructure_orchestrator(data: dict, config: dict) -> dict:
